@@ -312,7 +312,6 @@ subject.hasRole("admin")
 //退出登录
 subject.logout();
 ```
-![å°Dè¯¾å ](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGoAAAAiCAMAAACA9LykAAAAY1BMVEUAAAAjJikjJiojJiokJigjJikkJigjJikjJikjJikjJikkJigjJiojJiokJigjJiomJiYmJibWABPWABMmJiYmJiYmJibWABN9Ex99Ex/WABMmJiYjJiqgoKB3d3dcXFxBQUEZhcyGAAAAG3RSTlMAQIC/MGAQz9+fj+8gr3BQv4C/gCCvUN+/gGCwJXa4AAACP0lEQVRIx72W2ZLbIBBFe2EVQrLHnslCZ/n/rwwoOCDH5CWyzxO2VJy63TQlGGAQFbwEhagpOseE8BpmzRL8Cq9h9iJOw2uYWYRneBb67LtTsYiEZwXDlE47s4g8x2VsVplXuJRLGbtzUXap4zOFYvr54x16rIiFo1lS4fu3sIuFzyjhe6qcocftYukJRrQn7c0Bp6a679bcfvHDLpMCEB/jVB8bWonB4EBlq8kDjCvYVF8vlwtpA4UoMauQGeU2kZYYfBhMb9oIV7gjq6YHqrdPb28sQUEGGUsq5/ymQvLi2MUwkX5Y6lRdCgpq6VT8SHUphYphLi8z9KnIol+w4HnUqpZLJ2/+UsWpqBQvVVVcjrYiFwE5RwSZWQHlJauyesA53bAA14RQ6VWxqKIIZD5/gYLnqkJEaxGxpRccj9UNDR+2XfBZFaFgRJUt1uAhw1T1N9Wy9KrAPFSppnJwPu2uQaqT0vWqqpToTaUAJsc82b6rQ0Jz4dJU9s8tSGavQkQKXAdiXmVhBuuriNgRjWL5pprQ9mPlunPKuykIWZ+Zg1ZuBea88oNUgwpalfpQ1G0/ja6lGYoKVJYbzHiLmRke4prLJFN3KKG6+xfhHygFGwYrQ9XUVB8O65nIIBxNf9zPJ9z+ka18/816Hw7vVMZLxsMBTOvwXPikAJ1kJjgEYuzr1/XKnRSLHPlthtZq08rXYSVz7BendmIJi+7aPJJ+ixCOZY3btuw3ScMjHI9ZvZUdzq8GngYiVTQeq/kFPvQz03kWbEEAAAAASUVORK5CYII=) **愿景："让编程不在难学，让技术与生活更加有趣"** **更多教程请访问** [xdclass.net](https://xdclass-html-prod.oss-cn-shenzhen.aliyuncs.com/note/%E6%9C%80%E6%96%B0%E7%89%88%E6%9C%ACRocketMQ4.x%E6%95%99%E7%A8%8B.html)
 
 ## 第5章 详细讲解Apache Shiro realm实战
 ### 第1集 Shiro安全数据来源之Realm讲解
@@ -320,10 +319,10 @@ subject.logout();
 * realm作用：Shiro 从 Realm 获取安全数据
 * 默认自带的realm：idae查看realm继承关系，有默认实现和自定义继承的realm
 * 两个概念
-  * principal : 主体的标示，可以有多个，但是需要具有唯一性，常见的有用户名，手机号，邮箱等
-  * credential：凭证,  一般就是密码
+  *  **principal : 主体的标示，可以有多个，但是需要具有唯一性，常见的有用户名，手机号，邮箱等**
+  *  **credential：凭证,  一般就是密码**
   * 所以一般我们说 principal + credential   就账号 + 密码
-* 开发中，往往是自定义realm , 即集成 AuthorizingRealm
+* 开发中，往往是自定义realm , 即集成 AuthorizingRealm,重写AuthorizingRealm的getAuthorizationInfo方法
 
 ### 第2集 快速上手之Shiro内置IniRealm实操和权限验证api
 **简介：讲解Shiro内置 ini realm实操**
@@ -345,14 +344,10 @@ admin = *
 ```
 
 ### 第3集 快速上手之Shiro内置JdbcRealm实操
-
 **简介：讲解Shiro内置 JdbcRealm实操**
-
 * 使用jdbcrealm.ini
-
 ```
 #注意 文件格式必须为ini，编码为ANSI
-
 #声明Realm，指定realm类型
 jdbcRealm=org.apache.shiro.realm.jdbc.JdbcRealm
 

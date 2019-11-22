@@ -49,7 +49,7 @@ public class QuicksStratTest2 {
         System.out.println("认证结果(是否已授权)：" + subject.isAuthenticated());
         //最终调用的是org.apache.shiro.authz.ModularRealmAuthorizer.hasRole方法
         System.out.println("是否有对应的角色：" + subject.hasRole("root"));
-        //获取登录用户名
+        //获取登录 账号
         System.out.println("getPrincipal():" + subject.getPrincipal());
         subject.logout();
         System.out.println("logout后认证结果：" + subject.isAuthenticated());
