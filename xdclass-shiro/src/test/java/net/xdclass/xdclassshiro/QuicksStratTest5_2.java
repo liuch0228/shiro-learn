@@ -12,7 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- *
+ * iniRealm操作
  */
 public class QuicksStratTest5_2 {
 
