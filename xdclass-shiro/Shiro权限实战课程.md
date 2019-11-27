@@ -259,6 +259,46 @@ securityManager.realms=$jdbcRealm
 	AuthenticatingRealm->getAuthenticationInfo()
 	
 	补充：有些同学找不到密码验证方法 AuthenticatingRealm-> assertCredentialsMatch()
+断点跟踪源码：
+在测试类中subject.login(usernamePasswordToken); 代码处，stepinto该方法的实现类：
+org.apache.shiro.subject.support.DelegatingSubject#login
+		Subject subject = this.securityManager.login(this, token);  stepinto这个方法
+进入了org.apache.shiro.mgt.DefaultSecurityManager#login
+		info = this.authenticate(token);  stepinto该方法
+进入了org.apache.shiro.mgt.AuthenticatingSecurityManager#authenticate
+          return this.authenticator.authenticate(token);  stepinto这个方法
+进入了org.apache.shiro.authc.AbstractAuthenticator#authenticate
+		info = this.doAuthenticate(token);           stepinto这个方法
+进入了org.apache.shiro.authc.pam.ModularRealmAuthenticator#doAuthenticate
+		return realms.size() == 1 ? this.doSingleRealmAuthentication((Realm)realms.iterator().next(), authenticationToken) : this.doMultiRealmAuthentication(realms, authenticationToken);  一般realms为1，这里再次stepinto,进入org.apache.shiro.authc.pam.ModularRealmAuthenticator#doSingleRealmAuthentication，
+来到：
+AuthenticationInfo info = realm.getAuthenticationInfo(token);方法中，
+	AuthenticationInfo info = realm.getAuthenticationInfo(token);在这里stepinto,进入
+org.apache.shiro.realm.AuthenticatingRealm#getAuthenticationInfo：
+
+
+public final AuthenticationInfo getAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
+  //先从缓存中读取
+    AuthenticationInfo info = this.getCachedAuthenticationInfo(token);
+    if (info == null) {
+//第一次认证，缓存中没有数据，在这里stepinto,就进入了自定义realm重写了的doGetAuthenticationInfo()方法中，执行自定义的认证逻辑
+        info = this.doGetAuthenticationInfo(token);
+        log.debug("Looked up AuthenticationInfo [{}] from doGetAuthenticationInfo", info);
+        if (token != null && info != null) {
+            this.cacheAuthenticationInfoIfPossible(token, info);
+        }
+    } else {
+        log.debug("Using cached authentication info [{}] to perform credentials matching.", info);
+    }
+
+    if (info != null) {
+        this.assertCredentialsMatch(token, info);
+    } else {
+        log.debug("No AuthenticationInfo found for submitted AuthenticationToken [{}].  Returning null.", token);
+    }
+
+    return info;
+}
 ```
 ```
 授权流程解读：subject.checkRole("admin")
@@ -344,9 +384,9 @@ URL权限采取第一次匹配优先的方式
 使用ShiroConfig
 **注解方式**
 * @RequiresRoles(value={"admin", "editor"}, logical= Logical.AND) 
-  * 需要角色 admin 和 editor两个角色 AND表示两个同时成立
+  * 加了注解的接口的调用者需要具备admin 和 editor两个角色才能访问， AND表示两个同时成立
 * @RequiresPermissions (value={"user:add", "user:del"}, logical= Logical.OR)
-  * 需要权限 user:add 或 user:del权限其中一个，OR是或的意思。
+  * 接口的调用者需要具备权限 user:add 或 user:del权限其中一个才能构访问，OR是或的意思。
 - @RequiresAuthentication
   - 已经授过权，调用Subject.isAuthenticated()返回true
 - @RequiresUser
@@ -437,8 +477,8 @@ if(subject.isPermitted("/user/add")){
 ### 第2集 基于RBAC权限控制实战之Mysql数据库设计
 **简介：设计案例实战数据库 用户-角色-权限 及关联表**
 * 用户
-* 角色
-* 权限
+* 角色(一个用户可以具有多种角色,一个角色可以被多个用户使用，用户与角色为多对多关系)
+* 权限(一个角色可以拥有多种权限，一个权限可以归属到多种角色，也是N:N关系)
 
 ### 第3集 SpringBoot2.x项目框架和依赖搭建
 **简介：使用springboot+mybatis+shiro搭建项目基础框架**

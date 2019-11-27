@@ -52,7 +52,13 @@ public class CustomRealm extends AuthorizingRealm {
     }
 
 
-    //校验权限时会调用这个方法
+    /**
+     * 校验权限时会调用这个方法，原理就是把角色和权限封装到SimpleAuthorizationInfo的实体中，shiro框架会帮我们进行权限的校验
+     * 最终org.apache.shiro.realm.AuthorizingRealm#hasRole(org.apache.shiro.subject.PrincipalCollection, java.lang.String)
+     * 方法会调用这个返回的simpleAuthorizationInfo
+     * @param principalCollection
+     * @return simpleAuthorizationInfo
+     */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
         System.out.println("权限：doGetAuthorizationInfo");
@@ -84,7 +90,9 @@ public class CustomRealm extends AuthorizingRealm {
         String name = (String) authenticationToken.getPrincipal();
         //模拟从数据库读密码
         String pwd = getPwdByUserNameFromDB(name);
+
         if (StringUtils.isBlank(pwd)) {
+            //这里判断是必须要加的，返回null，即为认证不通过！！！详见源码
             return null; //匹配失败
         }
         /*useNmaePasswordToken中有用户的Principal和Credential
