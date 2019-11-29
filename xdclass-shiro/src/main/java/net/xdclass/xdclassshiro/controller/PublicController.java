@@ -13,7 +13,7 @@ public class PublicController {
 
     @Autowired
     private UserService userService;
-
+//http://localhost:8080/pub/find_user_info?username=jack
     @GetMapping("/find_user_info")
     public Object queryUserInfo(@RequestParam("username")String username){
         return  userService.findAllUserInfoByUsername(username);

@@ -6,6 +6,7 @@ import java.util.List;
 public class User {
     private int id;
     private String username;
+    private String password;
     private Date createTime;
     private String salt;
     //关联查询用户的角色
@@ -49,5 +50,13 @@ public class User {
 
     public void setSalt(String salt) {
         this.salt = salt;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
