@@ -11,6 +11,10 @@ import org.springframework.context.annotation.Configuration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ *  ShiroFilterFactoryBean配置，要加@Configuration注解
+ *
+ */
 @Configuration
 public class ShiroConfig {
 
@@ -46,6 +50,8 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/video/update", "perms[video_update]");
         // authc： 定义的url必须通过认证才可以访问 anon: url可以匿名访问
         filterChainDefinitionMap.put("/**", "authc");
+         // 这里没设置，过滤器不生效！！！
+        shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
         return shiroFilterFactoryBean;
 
 
@@ -55,27 +61,39 @@ public class ShiroConfig {
     public SecurityManager securityManager() {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         // 错误写法：securityManager.setRealm(new CustomRealm());
+        // 不是前后端分离项目，这里可以不用设置sessionmanager
+        securityManager.setSessionManager(sessionManager());
         // 必须通过spring实例化CustomRealm的实例之后，这里再通过customRealm()进行注入
         securityManager.setRealm(customRealm());
-        securityManager.setSessionManager(sessionManager());
         return securityManager;
     }
 
+    /**
+     * 注入realm
+     * @return
+     */
     @Bean
     public CustomRealm customRealm(){
         CustomRealm customRealm = new CustomRealm();
-        customRealm.setCredentialsMatcher(hashedCredentialsMatcher());
+        // 设置密码验证器  使用明文密码进行登录测试时，需要将这里注释掉，否则密码验证不通过
+//        customRealm.setCredentialsMatcher(hashedCredentialsMatcher());
         return customRealm;
     }
 
+    /**
+     * 注入自定义sessionManager
+     * @return
+     */
     @Bean
     public SessionManager sessionManager(){
         CustomSessionManager sessionManager = new CustomSessionManager();
+        // 设置session过期时间,不设置默认是30分钟,单位ms
+        sessionManager.setGlobalSessionTimeout(20000);
         return sessionManager;
     }
 
     /**
-     *
+     * 密码加解密规则
      * @return
      */
     @Bean
