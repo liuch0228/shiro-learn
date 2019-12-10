@@ -35,9 +35,19 @@ public class CustomRealm extends AuthorizingRealm {
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
         String username = (String) principalCollection.getPrimaryPrincipal();
         User user = userService.findAllUserInfoByUsername(username);
-        List<String> roleList = Collections.emptyList();
-        List<String> permissionList = Collections.emptyList();
+        List<String> roleList = new ArrayList<>();
+        List<String> permissionList = new ArrayList<>();
         List<Role> userRoleList = user.getRoleList();
+       /* if(userRoleList.size() >0 && userRoleList.get(0) != null){
+            for (Role role : userRoleList){
+                roleList.add(role.getName());
+                for (Permission p: role.getPermissionList()){
+                    if(null != p.getName()){
+                        permissionList.add(p.getName());
+                    }
+                }
+            }
+        }*/
         // 把用户的角色，权限放到对应的list中
         userRoleList.forEach(role ->{
             roleList.add(role.getName());
