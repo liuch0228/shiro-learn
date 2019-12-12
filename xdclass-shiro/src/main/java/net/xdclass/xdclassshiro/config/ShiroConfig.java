@@ -8,6 +8,7 @@ import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.servlet.Filter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -36,6 +37,13 @@ public class ShiroConfig {
         shiroFilterFactoryBean.setSuccessUrl("/");
         // 没有页面访问权限（登录了，未授权），调用该接口
         shiroFilterFactoryBean.setUnauthorizedUrl("/pub/not_permit");
+
+        // 设置自定义Filter
+        Map<String, Filter> filterMap = new LinkedHashMap<>();
+        filterMap.put("roleOrFilter", new CustomRolesAuthorizationFilter());
+        // 绑定
+        shiroFilterFactoryBean.setFilters(filterMap);
+
         // 注意，这里必须使用有序的LinkedHashMap，过滤器链是从上往下顺序执行，一般将/**放在最后，否则部分路径无法拦截
         Map<String,String> filterChainDefinitionMap = new LinkedHashMap<>();
         // 登出过滤器
@@ -44,8 +52,11 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/pub/**", "anon");
         // 登陆用户访问
         filterChainDefinitionMap.put("/authc/**", "authc");
+        // 设置自定义Filter,只要是管理员角色或者root角色就能访问
+        filterChainDefinitionMap.put("/admin/**", "roleOrFilter[admin,root]");
         // 管理员角色才能访问
-        filterChainDefinitionMap.put("/admin/**", "roles[admin]");
+//        filterChainDefinitionMap.put("/admin/**", "roles[admin]");
+
         // 有编辑权限才可以访问 /video/update是数据库配置的权限路径
         filterChainDefinitionMap.put("/video/update", "perms[video_update]");
         // authc： 定义的url必须通过认证才可以访问 anon: url可以匿名访问
@@ -75,8 +86,9 @@ public class ShiroConfig {
     @Bean
     public CustomRealm customRealm(){
         CustomRealm customRealm = new CustomRealm();
-        // 设置密码验证器  使用明文密码进行登录测试时，需要将这里注释掉，否则密码验证不通过
-//        customRealm.setCredentialsMatcher(hashedCredentialsMatcher());
+        // 设置密码验证器  使用明文密码进行登录测试时，需要将这里注释掉，或者在数据库存储new SimpleHash("md5",pwd,null,2)加密过的密码
+        //数据库修改二当家小D的密码为4280d89a5a03f812751f504cc10ee8a5,这里密码验证注释放开，使用明文密码访问http://localhost:8080/pub/login,能够登录成功
+        customRealm.setCredentialsMatcher(hashedCredentialsMatcher());
         return customRealm;
     }
 

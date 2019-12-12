@@ -671,7 +671,10 @@ localhost:8080/video/update
 * 我们的需求：
   * 订单信息，可以由角色 普通管理员 admin 或者 超级管理员 root 查看
   * 只要用户具备其中一个角色即可
-* 自定义Filter 
+* 自定义Filter :
+org.apache.shiro.web.filter.mgt.DefaultFilter 中有个 roles(RolesAuthorizationFilter.class),
+查看RolesAuthorizationFilter,发现它是继承AuthorizationFilter，并判断subject.hasAllRoles(roles) 才返回true,就是必须同时具备配置的所有角色
+才能访问，这不满足我们自己的需求
   ```
   // mappedValue -》roles[admin,root]
   public class CustomRolesOrAuthorizationFilter extends AuthorizationFilter {  
