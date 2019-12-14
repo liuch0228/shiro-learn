@@ -789,16 +789,19 @@ org.apache.shiro.web.filter.mgt.DefaultFilter 中有个 roles(RolesAuthorization
       return new SimpleAuthenticationInfo(user, user.getPassword(), this.getClass().getName());
       ```
 ### 第4集 性能提升之Redis整合SessionManager
-**简介：讲解使用Redis整合SessionManager，管理Session会话**
+**简介：讲解使用Redis整合SessionManager管理Session会话**
 * 为啥session也要持久化？
-  * 重启应用，用户无感知，可以继续以原先的状态继续访问
-* 怎么持久化？
+  * 应用保活，重启应用，用户无感知，可以继续以原先的状态继续访问
+  如果不做session持久化，假如一个已经登录的用户正在做新增操作，在还没有提交之前，后台服务器进行了重启，然后用户
+  编辑完数据进行提交，这时服务器因为重启，之前的session丢失，后台检测到用户成了未登录状态，就跳转到用户登录页面，
+  这样的用户体验很不友好，因此session需要进行持久化
+* 怎么持久化？+
   ``` 	
      //配置session持久化
      customSessionManager.setSessionDAO(redisSessionDAO());   	
    	/**
        * 自定义session持久化
-       * @return
+       * @return‘
        */
       public RedisSessionDAO redisSessionDAO(){
           RedisSessionDAO redisSessionDAO = new RedisSessionDAO();
@@ -811,7 +814,7 @@ org.apache.shiro.web.filter.mgt.DefaultFilter 中有个 roles(RolesAuthorization
   * DO对象需要实现序列化接口  Serializable
   * logout接口和以前一样调用，请求logout后会删除redis里面的对应的key,即删除对应的token
 
-### 第5集  ShiroConfig常用bean类配置
+### 第5集 ShiroConfig常用bean类配置
 **简介：讲解ShiroConfig常用bean 介绍**
 * LifecycleBeanPostProcessor
   * 作用：管理shiro一些bean的生命周期 即bean初始化 与销毁

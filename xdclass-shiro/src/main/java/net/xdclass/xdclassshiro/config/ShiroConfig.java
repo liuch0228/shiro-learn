@@ -7,6 +7,7 @@ import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.crazycake.shiro.RedisCacheManager;
 import org.crazycake.shiro.RedisManager;
+import org.crazycake.shiro.RedisSessionDAO;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -107,6 +108,8 @@ public class ShiroConfig {
         CustomSessionManager sessionManager = new CustomSessionManager();
         // 设置session过期时间,不设置默认是30分钟,单位ms
         sessionManager.setGlobalSessionTimeout(200000);
+        // 设置session持久化到redis中,这样服务器重启后，用户还可以通过之前的session进行操作
+        sessionManager.setSessionDAO(redisSessionDAO());
         return sessionManager;
     }
 
@@ -132,7 +135,7 @@ public class ShiroConfig {
     public RedisManager getRedisManager(){
         RedisManager redisManager = new RedisManager();
 //        redisManager.setHost("192.168.5.112");
-        redisManager.setHost("192.168.0.112");
+        redisManager.setHost("192.168.0.114");
         redisManager.setPort(8007);
         return redisManager;
     }
@@ -145,9 +148,20 @@ public class ShiroConfig {
         RedisCacheManager redisCacheManager = new RedisCacheManager();
         redisCacheManager.setRedisManager(getRedisManager());
         // 设置缓存过期时间，单位秒
-        redisCacheManager.setExpire(20);
+        redisCacheManager.setExpire(1800);
         return redisCacheManager;
+    }
 
-
+    /**
+     * 1.通过shiro redis插件自定义session持久化
+     * 2.在shiro的sessionManager中配置session持久化
+     * @return
+     */
+    public RedisSessionDAO redisSessionDAO(){
+        RedisSessionDAO redisSessionDao = new RedisSessionDAO();
+        redisSessionDao.setRedisManager(getRedisManager());
+        // session持久化的过期时间，单位s,如果不设置，默认使用session的过期时间，如果设置了，则使用这里设置的过期时间
+        redisSessionDao.setExpire(1800);
+        return redisSessionDao;
     }
 }

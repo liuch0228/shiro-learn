@@ -1,9 +1,11 @@
 package net.xdclass.xdclassshiro.domain;
 
+import java.io.Serializable;
+
 /**
  * 权限
  */
-public class Permission {
+public class Permission implements Serializable {
     private int id;
     private String name;
     private String url;
