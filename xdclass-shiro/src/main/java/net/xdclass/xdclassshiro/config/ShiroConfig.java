@@ -5,6 +5,8 @@ import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.crazycake.shiro.RedisCacheManager;
+import org.crazycake.shiro.RedisManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -74,6 +76,10 @@ public class ShiroConfig {
         // 错误写法：securityManager.setRealm(new CustomRealm());
         // 不是前后端分离项目，这里可以不用设置sessionmanager
         securityManager.setSessionManager(sessionManager());
+
+        // 使用自定义的cacheManager
+        securityManager.setCacheManager(cacheManager());
+
         // 必须通过spring实例化CustomRealm的实例之后，这里再通过customRealm()进行注入
         securityManager.setRealm(customRealm());
         return securityManager;
@@ -116,5 +122,32 @@ public class ShiroConfig {
         // 设置散列迭代次数，2 表示 hash之后再次hash
         credentialsMatcher.setHashIterations(2);
         return credentialsMatcher;
+    }
+
+
+    /**
+     * 配置redisManager
+     * @return
+     */
+    public RedisManager getRedisManager(){
+        RedisManager redisManager = new RedisManager();
+//        redisManager.setHost("192.168.5.112");
+        redisManager.setHost("192.168.0.112");
+        redisManager.setPort(8007);
+        return redisManager;
+    }
+
+    /**
+     * 配置缓存管理器具体实习类，然后添加到securityManager里面
+     * @return
+     */
+    public RedisCacheManager cacheManager(){
+        RedisCacheManager redisCacheManager = new RedisCacheManager();
+        redisCacheManager.setRedisManager(getRedisManager());
+        // 设置缓存过期时间，单位秒
+        redisCacheManager.setExpire(20);
+        return redisCacheManager;
+
+
     }
 }

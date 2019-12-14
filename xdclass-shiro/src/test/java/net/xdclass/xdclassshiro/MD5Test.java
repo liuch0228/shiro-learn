@@ -9,7 +9,7 @@ public class MD5Test {
     public void test(){
         String hashName = "md5";
 
-        String pwd = "123456";
+        String pwd = "123";
         Object reuslt = new SimpleHash(hashName,pwd,null,2);
         System.out.println(reuslt);
     }

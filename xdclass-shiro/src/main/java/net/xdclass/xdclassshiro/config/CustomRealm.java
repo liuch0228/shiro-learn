@@ -33,8 +33,8 @@ public class CustomRealm extends AuthorizingRealm {
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
-        String username = (String) principalCollection.getPrimaryPrincipal();
-        User user = userService.findAllUserInfoByUsername(username);
+        User principal = (User) principalCollection.getPrimaryPrincipal();
+        User user = userService.findAllUserInfoByUsername(principal.getUsername());
         List<String> roleList = new ArrayList<>();
         List<String> permissionList = new ArrayList<>();
         List<Role> userRoleList = user.getRoleList();
@@ -81,6 +81,8 @@ public class CustomRealm extends AuthorizingRealm {
             return null;
         }
 //org.apache.shiro.authc.SimpleAuthenticationInfo.SimpleAuthenticationInfo(java.lang.Object, java.lang.Object, java.lang.String)
-        return new SimpleAuthenticationInfo(username,pwd,this.getClass().getName());
+//        return new SimpleAuthenticationInfo(username,pwd,this.getClass().getName());
+        // 使用shiro-reids插件，该插件默认会把SimpleAuthenticationInfo的第一个参数作为redis的key来使用，这里需要把username改为userc才能保证key的唯一性
+        return new SimpleAuthenticationInfo(user,pwd,this.getClass().getName());
     }
 }
