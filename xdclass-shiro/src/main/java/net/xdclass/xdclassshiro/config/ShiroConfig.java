@@ -162,6 +162,10 @@ public class ShiroConfig {
         redisSessionDao.setRedisManager(getRedisManager());
         // session持久化的过期时间，单位s,如果不设置，默认使用session的过期时间，如果设置了，则使用这里设置的过期时间
         redisSessionDao.setExpire(1800);
+
+        //设置自定义sessionId生成
+        redisSessionDao.setSessionIdGenerator(new CustomSessionIdGenerator());
         return redisSessionDao;
     }
 }
+

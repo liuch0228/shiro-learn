@@ -852,7 +852,9 @@ org.apache.shiro.web.filter.mgt.DefaultFilter 中有个 roles(RolesAuthorization
 **简介：介绍单体应用到分布式应用下的鉴权方式 **
 电商项目：商品服务，支付服务，用户服务
 * 分布式session
-* UUID
+* UUID：对于分布式应用，在用户登录时，用户模块生成一个uuid作为token放到redis中存储起来，
+用户访问其他模块比如商品模块时携带sessionId，通过去redis中查找是否有该token来校验用户是否存在
+适用于用户量不是很大的情况下使用（几十万等用户量）
 * JWT
   * <https://www.cnblogs.com/cjsblog/p/9277677.html>
 * Oauth2.0
